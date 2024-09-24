@@ -5,7 +5,7 @@ import os
 app = Flask(__name__)
 
 # Configure this to your GCP project and bucket
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'abiding-ion-436022-b5-6b79515dad55.json'
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'abiding-ion-436022-b5-e533269739bc.json'
 BUCKET_NAME = 'storageforapp'
 
 @app.route('/', methods=['GET', 'POST'])
@@ -34,4 +34,4 @@ def upload_file():
     return render_template('upload.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)

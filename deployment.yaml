@@ -1,31 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-flask-app
+  name: myapp-deployment
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: my-flask-app
+      app: myapp
   template:
     metadata:
       labels:
-        app: my-flask-app
+        app: myapp
     spec:
       containers:
-      - name: my-flask-app
-        image: gcr.io/gcloud-auth-login-436022/my-flask-app:v1
+      - name: myapp
+        image: gcr.io/gcloud-auth-login-436022/my-flask-app:latest
         ports:
-        - containerPort: 5000
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: my-flask-app-service
-spec:
-  type: LoadBalancer
-  ports:
-    - port: 80
-      targetPort: 5000
-  selector:
-    app: my-flask-app
+        - containerPort: 8081
+      imagePullSecrets:
+      - name: gcr-json-key
