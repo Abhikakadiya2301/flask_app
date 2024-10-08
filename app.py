@@ -1,21 +1,47 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
 from google.cloud import storage
-import os,pyodbc
+import os
+from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
+from flask_sqlalchemy import SQLAlchemy
+from dotenv import load_dotenv
+import logging
+
+load_dotenv()
 
 app = Flask(__name__)
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-connection_string = (
-    "DRIVER={ODBC Driver 17 for SQL Server};"
-    f"SERVER={os.getenv('DB_HOST')};"
-    f"DATABASE={os.getenv('DB_NAME')};"
-    f"UID={os.getenv('DB_USER')};"
-    f"PWD={os.getenv('DB_PASSWORD')};"
-    "Trusted_Connection=no;"
-    "Encrypt=yes;"
+app.config['SQLALCHEMY_DATABASE_URI'] = (
+    f"mssql+pyodbc://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@"
+    f"{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}?"
+    "driver=ODBC+Driver+17+for+SQL+Server"
 )
 
-conn = pyodbc.connect(connection_string)
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Create the SQLAlchemy db instance
+db = SQLAlchemy(app)
+
+def test_conn():
+    try:
+        logger.info("Attempting database connection...")
+        result = db.session.execute(text('SELECT 1')).scalar()
+        logger.info(f"Query result: {result}")
+        if result == 1:
+            logger.info("Database connection successful")
+            return True
+        else:
+            logger.warning(f"Unexpected result from database: {result}")
+            return False
+    except SQLAlchemyError as e:
+        logger.error(f"Database error occurred: {str(e)}")
+        return False
+    finally:
+        logger.info("Closing database session")
+        db.session.close()
 
 # Configure this to your GCP project and bucket
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'abiding-ion-436022-b5-e533269739bc.json'
@@ -43,8 +69,14 @@ def upload_file():
                 content_type=file.content_type
             )
 
-            return f'File {file.filename} uploaded to {BUCKET_NAME}.'
+            # Test database connection
+            db_connected = test_conn()
+
+            if db_connected:
+                return f'Database connection successful!    File {file.filename} uploaded to {BUCKET_NAME}.'
+            else:
+                return f'File {file.filename} uploaded to {BUCKET_NAME}, but database connection failed.'
     return render_template('upload.html')
 
-#if __name__ == '__main__':
-    #app.run(debug=True, host='0.0.0.0', port=5000)
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5000)
