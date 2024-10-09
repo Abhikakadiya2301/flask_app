@@ -13,7 +13,8 @@ spec:
         app: myapp
     spec:
       containers:
-      - name: myapp
+      # Back-end container
+      - name: myapp-backend
         image: gcr.io/gcloud-auth-login-436022/myapp
         ports:
         - containerPort: 5000
@@ -39,4 +40,4 @@ spec:
                 name: db-credentials
                 key: DB_PASSWORD
       imagePullSecrets:
-      - name: db-credentials
+      - name: gcr-json-key
