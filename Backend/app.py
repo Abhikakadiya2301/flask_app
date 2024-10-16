@@ -1,12 +1,12 @@
 from flask import Flask, request, render_template
 from google.cloud import storage
-import os
+import os,logging
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
-import logging
-from datetime import datetime
+from datetime import datetime, timezone
+from pubsub_utils import publish_message, subscribe_messages
 
 load_dotenv()
 
@@ -52,7 +52,7 @@ def insert_file_info(filename, gcs_url):
         db.session.execute(query, {
             'filename': filename,
             'gcs_url': gcs_url,
-            'upload_date': datetime.utcnow()
+            'upload_date': datetime.now(timezone.utc)
         })
         db.session.commit()
         logger.info(f"File info inserted into database: {filename}")
@@ -96,12 +96,28 @@ def upload_file():
                 # Insert file info into the database
                 insert_success = insert_file_info(file.filename, gcs_url)
                 if insert_success:
-                    return f'File {file.filename} uploaded to {BUCKET_NAME} and info inserted into database.'
+                    message = f"File '{file.filename}' has been uploaded to {BUCKET_NAME}"
+                    publish_message(message)
+                    return f'File {file.filename} uploaded to {BUCKET_NAME} and info inserted into database! Message published 1!'
                 else:
                     return f'File {file.filename} uploaded to {BUCKET_NAME}, but database insertion failed.'
             else:
                 return f'File {file.filename} uploaded to {BUCKET_NAME}, but database connection failed.'
     return render_template('upload.html')
+
+# Callback function for message processing
+def callback(message):
+    print(f"Received message: {message.data.decode('utf-8')}")
+    message.ack()  # Acknowledge message so it can be removed from the queue
+
+# Background task to subscribe to messages
+@app.before_request
+def start_subscriber():
+    # Start the Pub/Sub subscription thread
+    from threading import Thread
+    if not hasattr(app, 'subscriber_started'):
+        Thread(target=subscribe_messages, args=(callback,)).start()
+        app.subscriber_started = True
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
