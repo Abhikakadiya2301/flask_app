@@ -28,8 +28,8 @@ Before running the application, ensure you have the following installed:
 1. **Clone the repository:**
 
    ```bash
-   git clone <repository-url>
-   cd <repository-directory>
+   git clone (https://github.com/Abhikakadiya2301/flask_app.git)
+   cd (https://github.com/Abhikakadiya2301/flask_app.git)
 
 2. **Set up a virtual environment:**
    ```bash
