@@ -29,7 +29,7 @@ Before running the application, ensure you have the following installed:
 
    ```bash
    git clone (https://github.com/Abhikakadiya2301/flask_app.git)
-   cd (https://github.com/Abhikakadiya2301/flask_app.git)
+
 
 2. **Set up a virtual environment:**
    ```bash
@@ -46,12 +46,12 @@ Before running the application, ensure you have the following installed:
     SQL_SERVER_CONNECTION_STRING=<your-sql-server-connection-string>
     PUBSUB_TOPIC=<your-pubsub-topic-name>
 
-***Run the Application***
+**Run the Application**
 ```bash 
 export FLASK_APP=app.py
 export FLASK_ENV=development
 flask run
-
+```
 **Testing The Feature**
 1. Navigate to http://localhost:5000 in your web browser.
 2. Use the file upload interface to select and upload a file.
