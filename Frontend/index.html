@@ -3,17 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Upload</title>
-    <link rel="stylesheet" href="css/styles.css">
-</head>
+    <title>Distributed system Porject</title>
+    <link rel="stylesheet" href="static/CSS/styles.css">
 <body>
-    <h1>Upload a file to GCP bucket</h1>
-    <form id="upload-form" enctype="multipart/form-data">
-        <input type="file" name="file" id="file-input" required>
-        <input type="submit" value="Upload">
+    <h1>File Upload</h1>
+    <form id="uploadForm" method="POST" enctype="multipart/form-data" action="/">
+        <input type="file" name="file" id="fileInput" />
+        <input type="submit" value="Upload" />
     </form>
-    <div id="message-box"></div>
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-background">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+    <script src="static/Js/upload.js"></script>
 
-    <script src="js/upload.js"></script>
 </body>
 </html>

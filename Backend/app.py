@@ -10,7 +10,7 @@ from pubsub_utils import publish_message, subscribe_messages
 
 load_dotenv()
 
-app = Flask(__name__)
+app = Flask(__name__,template_folder = "../Frontend",static_folder="../Frontend/static")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -103,7 +103,7 @@ def upload_file():
                     return f'File {file.filename} uploaded to {BUCKET_NAME}, but database insertion failed.'
             else:
                 return f'File {file.filename} uploaded to {BUCKET_NAME}, but database connection failed.'
-    return render_template('upload.html')
+    return render_template('index.html')
 
 # Callback function for message processing
 def callback(message):
