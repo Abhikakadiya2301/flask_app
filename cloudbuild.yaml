@@ -25,3 +25,7 @@ images:
 substitutions:
   _ZONE: 'northamerica-northeast2'
   _CLUSTER_NAME: 'my-flask-cluster'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  logsBucket: gs://flask-build-logs-bucket
