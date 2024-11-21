@@ -15,7 +15,7 @@ spec:
       containers:
       # Back-end container
       - name: myapp-backend
-        image: gcr.io/gcloud-auth-login-436022/myapp
+        image: gcr.io/abiding-ion-436022-b5/backend
         ports:
         - containerPort: 5000
         env:
