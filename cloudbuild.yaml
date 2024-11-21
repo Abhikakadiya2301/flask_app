@@ -1,25 +1,27 @@
 steps:
-# Build the container image
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'gcr.io/abiding-ion-436022-b5/flask-app', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Build Docker image'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/abiding-ion-436022-b5/myapp'
+      - '.'
 
-# Push the container image to Container Registry
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'gcr.io/abiding-ion-436022-b5/flask-app']
-
-# Deploy container image to GKE
-- name: 'gcr.io/cloud-builders/gke-deploy'
-  args:
-  - run
-  - --filename=k8s/
-  - --location=northamerica-northeast2
-  - --cluster=flask-app-cluster
+  - name: 'gcr.io/cloud-builders/kubectl'
+    id: 'Update Kubernetes deployment'
+    args:
+      - 'set'
+      - 'image'
+      - 'deployment/myapp-deployment'
+      - 'myapp=gcr.io/abiding-ion-436022-b5/myapp'
+      - '--namespace=default'
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=northamerica-northeast2'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=my-cluster'
 
 images:
-- gcr.io/abiding-ion-436022-b5/flask-app
+  - 'gcr.io/${PROJECT_ID}/myapp'
 
-options:
-  logging: CLOUD_LOGGING_ONLY
-  logsBucket: gs://flask-build-logs-bucket
-
-
+substitutions:
+  _ZONE: 'northamerica-northeast2'
+  _CLUSTER_NAME: 'my-flask-cluster'
