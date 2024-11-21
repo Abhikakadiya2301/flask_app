@@ -18,4 +18,8 @@ steps:
 images:
 - gcr.io/abiding-ion-436022-b5/flask-app
 
+options:
+  logging: CLOUD_LOGGING_ONLY
+  logsBucket: gs://flask-build-logs-bucket
+
 
