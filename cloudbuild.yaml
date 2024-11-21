@@ -1,0 +1,21 @@
+steps:
+# Build the container image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/cicd-in-class/flask-app', '.']
+
+# Push the container image to Container Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/cicd-in-class/flask-app']
+
+# Deploy container image to GKE
+- name: 'gcr.io/cloud-builders/gke-deploy'
+  args:
+  - run
+  - --filename=k8s/
+  - --location=northamerica-northeast2
+  - --cluster=flask-app-cluster
+
+images:
+- gcr.io/cicd-in-class/flask-app
+
+
